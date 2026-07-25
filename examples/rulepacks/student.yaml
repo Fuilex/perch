@@ -1,0 +1,22 @@
+# Student
+# Organize coursework and study materials.
+
+- name: Lecture notes
+  conditions:
+    - type: Glob
+      value: "*.{pdf,docx,pptx}"
+    - type: OlderThan
+      value: 86400
+  action:
+    type: Move
+    dest_template: "~/Documents/University/{year}/{name}.{ext}"
+  stop_on_match: true
+
+- name: Spreadsheets
+  conditions:
+    - type: Glob
+      value: "*.{xlsx,csv}"
+  action:
+    type: Move
+    dest_template: "~/Documents/University/Data/{name}.{ext}"
+  stop_on_match: true

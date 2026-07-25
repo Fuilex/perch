@@ -1,0 +1,32 @@
+# Developer
+# Keep project directories clean.
+
+- name: Old node_modules
+  conditions:
+    - type: Regex
+      value: "^node_modules$"
+    - type: OlderThan
+      value: 2592000
+  action:
+    type: Trash
+  stop_on_match: true
+
+- name: Build artifacts
+  conditions:
+    - type: Glob
+      value: "*.{o,obj,class,pyc}"
+    - type: OlderThan
+      value: 604800
+  action:
+    type: Trash
+  stop_on_match: true
+
+- name: Log files
+  conditions:
+    - type: Extension
+      value: log
+    - type: SizeGreater
+      value: 10485760
+  action:
+    type: Trash
+  stop_on_match: true

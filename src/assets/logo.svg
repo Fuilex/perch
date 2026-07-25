@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" width="240" height="80">
+  <rect width="240" height="80" fill="#0A0A0B"/>
+
+  <!-- Bird silhouette: minimal geometric -->
+  <!-- Branch / perch line -->
+  <line x1="12" y1="52" x2="52" y2="52" stroke="#F5F5F7" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- Body arc -->
+  <path d="M22 52 Q24 36 36 30 Q44 26 48 34 Q50 42 44 50 Q36 54 22 52Z"
+        fill="none" stroke="#F5F5F7" stroke-width="1.2" stroke-linejoin="round"/>
+
+  <!-- Head -->
+  <circle cx="44" cy="28" r="5" fill="none" stroke="#F5F5F7" stroke-width="1.2"/>
+
+  <!-- Beak -->
+  <path d="M48 27 L54 29 L48 31" fill="none" stroke="#F5F5F7" stroke-width="1" stroke-linejoin="round"/>
+
+  <!-- Tail -->
+  <path d="M22 52 L12 44 M22 52 L10 50" stroke="#F5F5F7" stroke-width="1.2" stroke-linecap="round"/>
+
+  <!-- Feet -->
+  <line x1="30" y1="52" x2="28" y2="58" stroke="#F5F5F7" stroke-width="1" stroke-linecap="round"/>
+  <line x1="28" y1="58" x2="24" y2="60" stroke="#F5F5F7" stroke-width="1" stroke-linecap="round"/>
+  <line x1="28" y1="58" x2="30" y2="61" stroke="#F5F5F7" stroke-width="1" stroke-linecap="round"/>
+
+  <line x1="38" y1="52" x2="36" y2="58" stroke="#F5F5F7" stroke-width="1" stroke-linecap="round"/>
+  <line x1="36" y1="58" x2="32" y2="60" stroke="#F5F5F7" stroke-width="1" stroke-linecap="round"/>
+  <line x1="36" y1="58" x2="38" y2="61" stroke="#F5F5F7" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Separator -->
+  <line x1="68" y1="24" x2="68" y2="56" stroke="#F5F5F7" stroke-width="0.5" stroke-opacity="0.2"/>
+
+  <!-- "perch" wordmark — lowercase, light weight, wide tracking -->
+  <text x="84" y="46"
+        font-family="-apple-system, 'SF Pro Display', 'Inter', 'Segoe UI', system-ui, sans-serif"
+        font-size="22"
+        font-weight="300"
+        letter-spacing="6"
+        fill="#F5F5F7"
+        fill-opacity="0.95">perch</text>
+
+  <!-- "by fuilex" — tiny, muted -->
+  <text x="85" y="60"
+        font-family="-apple-system, 'SF Pro Display', 'Inter', 'Segoe UI', system-ui, sans-serif"
+        font-size="8.5"
+        font-weight="300"
+        letter-spacing="2.5"
+        fill="#F5F5F7"
+        fill-opacity="0.32">by fuilex</text>
+</svg>

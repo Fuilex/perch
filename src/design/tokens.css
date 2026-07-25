@@ -1,0 +1,211 @@
+/* ============================================================================
+ * Perch Design Tokens — CSS Custom Properties
+ * Generated from tokens.ts. All component styles reference these variables.
+ * ========================================================================= */
+
+/* --------------------------------------------------------------------------
+ * Dark theme (default)
+ * ----------------------------------------------------------------------- */
+
+:root,
+[data-theme='dark'] {
+  /* Background gradient */
+  --color-bg-from: #0A0A0B;
+  --color-bg-to: #141416;
+
+  /* Glass material */
+  --glass-fill: rgba(255, 255, 255, 0.06);
+  --glass-fill-hover: rgba(255, 255, 255, 0.09);
+  --glass-fill-active: rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-border-subtle: rgba(255, 255, 255, 0.06);
+  --glass-highlight: rgba(255, 255, 255, 0.10);
+  --glass-separator: rgba(255, 255, 255, 0.06);
+
+  /* Specular border gradient */
+  --glass-specular-from: rgba(255, 255, 255, 0.20);
+  --glass-specular-mid: rgba(255, 255, 255, 0.05);
+  --glass-specular-to: rgba(255, 255, 255, 0.02);
+
+  /* Text */
+  --text-primary: #F5F5F7;
+  --text-secondary: rgba(245, 245, 247, 0.62);
+  --text-tertiary: rgba(245, 245, 247, 0.38);
+  --text-quaternary: rgba(245, 245, 247, 0.22);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.20), 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 1px 2px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.20), 0 24px 64px rgba(0, 0, 0, 0.25);
+
+  /* Focus */
+  --focus-ring: 0 0 0 2px rgba(255, 255, 255, 0.25);
+  --focus-ring-offset: rgba(255, 255, 255, 0.08);
+
+  /* Selection */
+  --selection-bg: rgba(255, 255, 255, 0.16);
+  --selection-text: #F5F5F7;
+
+  /* Scrollbar */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.14);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.22);
+  --scrollbar-track: transparent;
+
+  color-scheme: dark;
+}
+
+/* --------------------------------------------------------------------------
+ * Light theme
+ * ----------------------------------------------------------------------- */
+
+[data-theme='light'] {
+  --color-bg-from: #FAFAFA;
+  --color-bg-to: #F0F0F2;
+
+  --glass-fill: rgba(255, 255, 255, 0.55);
+  --glass-fill-hover: rgba(255, 255, 255, 0.70);
+  --glass-fill-active: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-border-subtle: rgba(0, 0, 0, 0.05);
+  --glass-highlight: rgba(255, 255, 255, 0.60);
+  --glass-separator: rgba(0, 0, 0, 0.06);
+
+  --glass-specular-from: rgba(255, 255, 255, 0.80);
+  --glass-specular-mid: rgba(255, 255, 255, 0.30);
+  --glass-specular-to: rgba(255, 255, 255, 0.10);
+
+  --text-primary: #0A0A0B;
+  --text-secondary: rgba(10, 10, 11, 0.60);
+  --text-tertiary: rgba(10, 10, 11, 0.38);
+  --text-quaternary: rgba(10, 10, 11, 0.22);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 1px 2px rgba(0, 0, 0, 0.03), 0 8px 24px rgba(0, 0, 0, 0.06), 0 24px 64px rgba(0, 0, 0, 0.08);
+
+  --focus-ring: 0 0 0 2px rgba(0, 0, 0, 0.18);
+  --focus-ring-offset: rgba(0, 0, 0, 0.06);
+
+  --selection-bg: rgba(0, 0, 0, 0.10);
+  --selection-text: #0A0A0B;
+
+  --scrollbar-thumb: rgba(0, 0, 0, 0.14);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.22);
+  --scrollbar-track: transparent;
+
+  color-scheme: light;
+}
+
+/* Auto theme — follows system preference */
+@media (prefers-color-scheme: light) {
+  [data-theme='auto'] {
+    --color-bg-from: #FAFAFA;
+    --color-bg-to: #F0F0F2;
+
+    --glass-fill: rgba(255, 255, 255, 0.55);
+    --glass-fill-hover: rgba(255, 255, 255, 0.70);
+    --glass-fill-active: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-border-subtle: rgba(0, 0, 0, 0.05);
+    --glass-highlight: rgba(255, 255, 255, 0.60);
+    --glass-separator: rgba(0, 0, 0, 0.06);
+
+    --glass-specular-from: rgba(255, 255, 255, 0.80);
+    --glass-specular-mid: rgba(255, 255, 255, 0.30);
+    --glass-specular-to: rgba(255, 255, 255, 0.10);
+
+    --text-primary: #0A0A0B;
+    --text-secondary: rgba(10, 10, 11, 0.60);
+    --text-tertiary: rgba(10, 10, 11, 0.38);
+    --text-quaternary: rgba(10, 10, 11, 0.22);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 1px 2px rgba(0, 0, 0, 0.03), 0 8px 24px rgba(0, 0, 0, 0.06), 0 24px 64px rgba(0, 0, 0, 0.08);
+
+    --focus-ring: 0 0 0 2px rgba(0, 0, 0, 0.18);
+    --focus-ring-offset: rgba(0, 0, 0, 0.06);
+
+    --selection-bg: rgba(0, 0, 0, 0.10);
+    --selection-text: #0A0A0B;
+
+    --scrollbar-thumb: rgba(0, 0, 0, 0.14);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.22);
+    --scrollbar-track: transparent;
+
+    color-scheme: light;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Reduced transparency — replace glass with opaque surfaces
+ * ----------------------------------------------------------------------- */
+
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  [data-theme='dark'] {
+    --glass-fill: #1C1C1E;
+    --glass-fill-hover: #2C2C2E;
+    --glass-fill-active: #1A1A1C;
+    --glass-border: rgba(255, 255, 255, 0.12);
+  }
+
+  [data-theme='light'] {
+    --glass-fill: #FFFFFF;
+    --glass-fill-hover: #F8F8FA;
+    --glass-fill-active: #F0F0F2;
+    --glass-border: rgba(0, 0, 0, 0.10);
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Shared tokens (theme-independent)
+ * ----------------------------------------------------------------------- */
+
+:root {
+  /* Font families */
+  --font-display: -apple-system, "SF Pro Display", "Inter var", Inter, system-ui, sans-serif;
+  --font-text: -apple-system, "SF Pro Text", "Inter var", Inter, system-ui, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+
+  /* Spacing (4pt grid) */
+  --space-0: 0px;
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radii */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Glass blur */
+  --glass-blur-light: 24px;
+  --glass-blur-medium: 36px;
+  --glass-blur-heavy: 48px;
+  --glass-saturate: 140%;
+  --glass-noise-opacity: 0.03;
+
+  /* Transitions */
+  --duration-micro: 150ms;
+  --duration-standard: 280ms;
+  --duration-large: 420ms;
+  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Layout */
+  --sidebar-width: 220px;
+  --titlebar-height: 48px;
+  --window-radius: 24px;
+}

@@ -1,0 +1,20 @@
+# Photo Archive
+# Organize photos by year and month.
+
+- name: Photos by date
+  conditions:
+    - type: Glob
+      value: "*.{jpg,jpeg,png,heic,heif,raw,cr2,nef,arw}"
+  action:
+    type: Move
+    dest_template: "~/Pictures/Archive/{year}/{month}/{name}.{ext}"
+  stop_on_match: true
+
+- name: Videos by date
+  conditions:
+    - type: Glob
+      value: "*.{mp4,mov,avi,mkv}"
+  action:
+    type: Move
+    dest_template: "~/Videos/Archive/{year}/{month}/{name}.{ext}"
+  stop_on_match: true

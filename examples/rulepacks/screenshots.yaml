@@ -1,0 +1,20 @@
+# Screenshots
+# Organize and clean up screenshots.
+
+- name: Screenshots by date
+  conditions:
+    - type: Glob
+      value: "Screenshot*"
+  action:
+    type: Move
+    dest_template: "~/Pictures/Screenshots/{year}-{month}/{name}.{ext}"
+  stop_on_match: true
+
+- name: Screen recordings
+  conditions:
+    - type: Glob
+      value: "Screen Recording*"
+  action:
+    type: Move
+    dest_template: "~/Videos/Screen Recordings/{year}-{month}/{name}.{ext}"
+  stop_on_match: true

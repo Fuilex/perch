@@ -1,0 +1,43 @@
+# Downloads Organizer
+# Sort common download types into organized folders.
+
+- name: PDFs to Documents
+  conditions:
+    - type: Extension
+      value: pdf
+    - type: OlderThan
+      value: 259200
+  action:
+    type: Move
+    dest_template: "~/Documents/Papers/{year}/{name}.{ext}"
+  stop_on_match: true
+
+- name: Images to Pictures
+  conditions:
+    - type: Glob
+      value: "*.{jpg,jpeg,png,gif,webp}"
+  action:
+    type: Move
+    dest_template: "~/Pictures/{year}-{month}/{name}.{ext}"
+  stop_on_match: true
+
+- name: Archives to Downloads/Archives
+  conditions:
+    - type: Glob
+      value: "*.{zip,tar,gz,7z,rar}"
+    - type: OlderThan
+      value: 604800
+  action:
+    type: Move
+    dest_template: "~/Downloads/Archives/{name}.{ext}"
+  stop_on_match: true
+
+- name: Installers to Trash
+  conditions:
+    - type: Glob
+      value: "*.{dmg,exe,msi,pkg}"
+    - type: OlderThan
+      value: 1209600
+  action:
+    type: Trash
+  stop_on_match: true

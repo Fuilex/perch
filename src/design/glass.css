@@ -1,0 +1,218 @@
+/* ============================================================================
+ * Liquid Glass Material System
+ *
+ * Glass is a material, not an effect. Each layer consists of:
+ *   1. Backdrop blur + saturate
+ *   2. Semi-transparent fill
+ *   3. Specular border (gradient edge, brighter top-left → darker bottom-right)
+ *   4. Inner highlight (1px inset top light)
+ *   5. Multi-layer soft shadow
+ *   6. Noise/grain overlay (SVG texture)
+ *
+ * Hierarchy rule: max 3 glass layers stacked. Below that — opaque surfaces.
+ * ========================================================================= */
+
+/* --------------------------------------------------------------------------
+ * Base glass layer
+ * ----------------------------------------------------------------------- */
+
+.glass {
+  position: relative;
+  background-color: var(--glass-fill);
+  backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-md);
+  border: none;
+  isolation: isolate;
+}
+
+/* Specular border — gradient 1px edge via mask technique */
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--glass-specular-from) 0%,
+    var(--glass-specular-mid) 50%,
+    var(--glass-specular-to) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Noise grain overlay */
+.glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url('../assets/noise.svg');
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: var(--glass-noise-opacity);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  z-index: 2;
+}
+
+/* --------------------------------------------------------------------------
+ * Glass variants — hierarchy levels
+ * ----------------------------------------------------------------------- */
+
+/* Panel: large surface (sidebar, main area). Heaviest blur. */
+.glass--panel {
+  --glass-blur-current: var(--glass-blur-heavy);
+  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-sm);
+}
+
+/* Card: medium element. Standard blur. */
+.glass--card {
+  --glass-blur-current: var(--glass-blur-medium);
+  backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-md);
+}
+
+/* Popover: dropdown, context menu. Elevated. */
+.glass--popover {
+  --glass-blur-current: var(--glass-blur-medium);
+  backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-lg);
+}
+
+/* Toolbar: top bar, navigation bar. Light blur. */
+.glass--toolbar {
+  --glass-blur-current: var(--glass-blur-light);
+  backdrop-filter: blur(var(--glass-blur-light)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-sm);
+}
+
+/* Sheet: bottom sheet, modal overlay. Strongest shadow. */
+.glass--sheet {
+  --glass-blur-current: var(--glass-blur-heavy);
+  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-lg);
+}
+
+/* HUD: compact floating element (tray popup, mini notification). */
+.glass--hud {
+  --glass-blur-current: var(--glass-blur-light);
+  backdrop-filter: blur(var(--glass-blur-light)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-light)) saturate(var(--glass-saturate));
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-md);
+}
+
+/* --------------------------------------------------------------------------
+ * Glass interactive states
+ * ----------------------------------------------------------------------- */
+
+.glass--interactive {
+  cursor: pointer;
+  transition:
+    background-color var(--duration-micro) var(--ease-out),
+    box-shadow var(--duration-micro) var(--ease-out);
+}
+
+.glass--interactive:hover {
+  background-color: var(--glass-fill-hover);
+}
+
+.glass--interactive:active {
+  background-color: var(--glass-fill-active);
+}
+
+/* Focus ring — visible only on keyboard nav */
+.glass--interactive:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--focus-ring),
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-md);
+}
+
+/* --------------------------------------------------------------------------
+ * Glass separator (horizontal/vertical dividers)
+ * ----------------------------------------------------------------------- */
+
+.glass-separator {
+  background-color: var(--glass-separator);
+  border: none;
+  flex-shrink: 0;
+}
+
+.glass-separator--horizontal {
+  height: 1px;
+  width: 100%;
+}
+
+.glass-separator--vertical {
+  width: 1px;
+  height: 100%;
+}
+
+/* --------------------------------------------------------------------------
+ * Reduced motion — remove blur animations
+ * ----------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .glass,
+  .glass--panel,
+  .glass--card,
+  .glass--popover,
+  .glass--toolbar,
+  .glass--sheet,
+  .glass--hud {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Reduced transparency — opaque fallback
+ * ----------------------------------------------------------------------- */
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass--panel,
+  .glass--card,
+  .glass--popover,
+  .glass--toolbar,
+  .glass--sheet,
+  .glass--hud {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .glass::after {
+    display: none;
+  }
+}
