@@ -5,220 +5,294 @@
 <h1 align="center">Perch</h1>
 
 <p align="center">
-  <strong>Your folders, tidy, without you touching them.</strong><br />
-  <sub>Русский и English · Windows · macOS · Linux · nothing leaves the machine</sub>
+  <strong>Раскладывает файлы по папкам, пока вы этим не занимаетесь.</strong><br />
+  <sub>Windows · macOS · Linux · ничего не уходит с компьютера</sub>
+</p>
+
+<p align="center">
+  <a href="README.en.md">English</a> ·
+  <a href="https://github.com/Fuilex/perch/releases">Скачать</a> ·
+  <a href="docs/rules.md">Правила</a>
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-white?style=flat-square" alt="MIT" /></a>
-  <a href="https://github.com/Fuilex/perch/releases"><img src="https://img.shields.io/github/v/release/Fuilex/perch?style=flat-square&color=white&include_prereleases" alt="Latest release" /></a>
+  <a href="https://github.com/Fuilex/perch/releases"><img src="https://img.shields.io/github/v/release/Fuilex/perch?style=flat-square&color=white&include_prereleases" alt="Последний релиз" /></a>
   <a href="https://github.com/Fuilex/perch/actions"><img src="https://img.shields.io/github/actions/workflow/status/Fuilex/perch/ci.yml?branch=main&style=flat-square&label=CI" alt="CI" /></a>
 </p>
 
 <p align="center">
-  <img src="docs/media/screenshot.png" width="820" alt="The Rules screen: a rule summarised in one line, with a switch to turn it off" />
+  <img src="docs/media/screenshot.png" width="820" alt="Экран правил: правило описано одной строкой, рядом переключатель" />
 </p>
 
-Downloads folder full of installers, screenshots and half-read PDFs? Tell Perch
-what belongs where, once. It watches the folders you choose and files things as
-they land — locally, with no account, no cloud and no network calls at all.
+Папка «Загрузки», забитая установщиками, скриншотами и недочитанными PDF. Скажите
+Perch один раз, что где должно лежать, и он будет следить за выбранными папками и
+раскладывать всё по мере появления. Локально: без аккаунта, без облака, вообще без
+обращений в сеть.
 
-It shows you what it plans to do before it does it, and everything it has done
-can be undone, one file or a whole batch at a time.
+Перед тем как что-то сделать, показывает список. Всё, что сделал, можно вернуть
+обратно: по одному файлу или всю пачку сразу.
 
 ## Как это работает
 
-Правило это условие и что с ним делать. Условия соединяются через «и», правила
-проверяются сверху вниз:
+Правило это условие и что с ним делать. Условий может быть несколько, они
+соединяются через «и». Правила проверяются сверху вниз:
 
 > **если** имя подходит под `Screenshot*` **и** файл старше 30 дней
 > **тогда** перенести в `~/Pictures/Screenshots/{year}-{month}`
 
-Дальше на выбор: разбирать автоматически, как только в папке что-то появилось,
-или вручную кнопкой. Перед применением Perch показывает список файлов, и любой
-можно снять галочкой. Всё, что сделано, лежит в истории и отменяется обратно.
+Дальше на выбор: разбирать автоматически, как только в папке что-то появилось, или
+вручную кнопкой «Разобрать сейчас». Перед применением Perch покажет список файлов,
+и любой можно снять галочкой.
 
-Интерфейс на русском по умолчанию, английский переключается в настройках.
-Начинать с пустого места не нужно: шесть готовых правил уже внутри.
+Начинать с пустого места не нужно. Внутри шесть готовых правил, нажатие открывает
+любое в редакторе, менять можно всё:
 
-## What it does
+| Заготовка | Что делает |
+| --- | --- |
+| Картинки в «Изображения» | png, jpg, webp раскладывает по годам |
+| Документы в «Документы» | pdf, docx, xlsx |
+| Архивы в отдельную папку | zip, rar, 7z |
+| Старые скриншоты в архив | `Screenshot*` старше 30 дней, по месяцам |
+| Большие файлы отдельно | всё тяжелее 500 МБ |
+| Установщики в корзину | exe и msi старше 14 дней |
 
-- **Conditions** — extension, name pattern, regex, size, age; combined with *and*
-- **Actions** — move, copy, rename, or send to the recycle bin
-- **Templates** — `{name}` `{ext}` `{year}` `{month}` `{day}` `{hour}` `{minute}` `{counter}` `{hash8}` `{source_folder}`, with missing folders created on the way
-- **Dry run first** — every operation listed before it runs, each one deselectable
-- **Undo** — journalled in SQLite; one file or a whole batch
-- **Watched folders** — filesystem events with a settle delay, so half-written downloads are left alone
-- **Drag and drop** — drop a folder on the window to start watching it
-- **Quiet hours** — a daily window where nothing is organized automatically
-- **Optional password** — a local profile locks the window and the commands behind it
-- **Everything in the app** — no config file to hand-edit; Settings shows you where the files live anyway
-- **JSON rules** — import, export, share, version-control
-- **No telemetry** — zero network requests, no accounts, fully local
+## Что умеет
 
-## Install
+- **Условия**: расширение, шаблон имени, регулярное выражение, размер, возраст
+- **Действия**: переместить, копировать, переименовать, отправить в корзину
+- **Шаблоны путей**: `{name}` `{ext}` `{year}` `{month}` `{day}` `{hour}` `{minute}` `{counter}` `{hash8}` `{source_folder}`, отсутствующие папки создаются сами
+- **Показ перед применением**: список операций, каждую можно исключить
+- **Отмена**: история в SQLite, откат по файлу или всей пачкой
+- **Наблюдение за папками**: реакция на события файловой системы с задержкой, чтобы не трогать недокачанный файл
+- **Перетаскивание**: бросьте папку на окно, и она добавится в отслеживаемые
+- **Тихие часы**: интервал в сутках, когда автоматический разбор не работает
+- **Пароль**: необязательный локальный профиль, закрывает окно и команды за ним
+- **Два языка**: русский по умолчанию, английский переключается в настройках
+- **Всё в приложении**: конфиг руками править не нужно, хотя настройки показывают, где лежат файлы
+- **Без телеметрии**: ноль сетевых запросов, никаких аккаунтов, всё локально
 
-Grab an installer from [Releases](https://github.com/Fuilex/perch/releases):
+## Настройки
 
-| OS | File |
+Все настройки применяются сразу и сохраняются на диск в тот же момент. Отдельной
+кнопки «Сохранить» нет.
+
+**Внешний вид**
+
+| Настройка | Что делает |
+| --- | --- |
+| Язык | Русский или английский |
+| Тема | Тёмная, светлая или системная |
+| Акцент | Белый по умолчанию. Подсвечивает переключатели, главные кнопки и рамку при наведении |
+| Стекло | Насколько панели размывают фон: выкл, слабое, среднее, сильное. На слабой машине лучше выключить |
+| Меньше анимации | Оставляет только смену состояний, без движения |
+
+**Разбор**
+
+| Настройка | Что делает |
+| --- | --- |
+| Разбирать автоматически | Применять правила, как только в отслеживаемой папке что-то изменилось |
+| Пауза перед разбором | Сколько ждать после последнего изменения. Нужна, чтобы не тронуть файл, который ещё скачивается |
+| Показывать перед применением | Список того, что произойдёт, с возможностью снять галочки |
+| Пропускать скрытые файлы | Не трогать файлы с точкой в начале и скрытые |
+| Тихие часы | Интервал, когда автоматический разбор не работает. Интервал через полночь тоже понимается |
+
+**Система**
+
+| Настройка | Что делает |
+| --- | --- |
+| Запускать вместе с системой | Добавляет Perch в автозагрузку |
+| Значок в трее | Позволяет открыть Perch, когда окно закрыто |
+| Закрытие окна не выключает Perch | Иначе крестик завершает работу, и папки перестают разбираться |
+
+**Аккаунт** — поставить или снять пароль, сменить его, заблокировать окно.
+Подробнее ниже.
+
+**Правила** — выгрузить все правила в файл JSON или загрузить из него. При
+загрузке можно добавить к текущим или заменить их.
+
+**На диске** — пути ко всем файлам приложения, с кнопкой «Показать», которая
+открывает папку в проводнике.
+
+## Горячие клавиши
+
+| Клавиши | Действие |
+| --- | --- |
+| `Ctrl + K` | Палитра команд: переход по разделам, разбор, добавление папки |
+| `Ctrl + N` | Новое правило |
+| `Ctrl + ,` | Настройки |
+| `Esc` | Закрыть открытое окно поверх |
+
+## Установка
+
+Возьмите установщик со страницы [Releases](https://github.com/Fuilex/perch/releases):
+
+| Система | Файл |
 |----|------|
-| Windows 10+ | `Perch_x.y.z_x64-setup.exe`, or the portable `perch.exe` |
-| macOS 12+ | `Perch_x.y.z_aarch64.dmg` (Apple silicon) or `_x64.dmg` (Intel) |
-| Linux | `.AppImage` or `.deb` |
+| Windows 10+ | `Perch_x.y.z_x64-setup.exe` или портативный `perch.exe` |
+| macOS 12+ | `Perch_x.y.z_aarch64.dmg` (Apple silicon) или `_x64.dmg` (Intel) |
+| Linux | `.AppImage` или `.deb` |
 
-### From source
+### Из исходников
 
 ```bash
 npm install
 npm run tauri dev
 ```
 
-`npm run dev` on its own serves the interface in a browser for UI work. There is
-no backend behind it, so the window says so and anything touching real files is
-refused.
+`npm run dev` сам по себе открывает интерфейс в браузере, это для работы над
+внешним видом. Бэкенда за ним нет, окно об этом честно сообщает, и всё, что
+трогает настоящие файлы, отклоняется.
 
 <details>
-<summary><strong>Building on Windows</strong> — three traps worth knowing about</summary>
+<summary><strong>Сборка под Windows</strong> — три грабли, о которых стоит знать</summary>
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/dev.ps1
 powershell -ExecutionPolicy Bypass -File scripts/build.ps1
 ```
 
-**Build for MSVC if you intend to give the result to anyone.** On the GNU
-toolchain, `webview2-com` cannot link the WebView2 loader statically, so the
-executable ends up importing `WebView2Loader.dll` at runtime. Cargo drops that
-DLL next to the binary, which is why the build runs fine on the machine that made
-it — but the installer does not carry it, and on someone else's computer the app
-dies before it starts:
+**Собирайте под MSVC, если результат кому-то отдаёте.** На GNU-инструментарии
+`webview2-com` не умеет линковать загрузчик WebView2 статически, и бинарник
+начинает требовать `WebView2Loader.dll` рядом с собой. Cargo кладёт эту
+библиотеку в папку сборки, поэтому на своей машине всё работает. Но установщик её
+не несёт, и на чужом компьютере приложение умирает до запуска:
 
 > Не удаётся продолжить выполнение кода, поскольку система не обнаружила
 > WebView2Loader.dll
 
-MSVC links it statically and the problem disappears:
+Под MSVC загрузчик линкуется статически, и проблемы нет:
 
 ```bash
 npx tauri build --target x86_64-pc-windows-msvc
 ```
 
-The release workflow already builds MSVC, so installers from a tagged release are
-unaffected. Only hand-built GNU ones are.
+Скрипт сборки делает это по умолчанию. Релизный workflow тоже собирает под MSVC,
+так что установщики из релиза этой болезнью не страдают, только собранные вручную.
 
-MinGW on `PATH` is what the GNU toolchain needs for `windres`; the scripts put it
-there.
+**Закрытие окна не завершает Perch.** Он уходит в трей, а запущенная копия держит
+`perch.exe` открытым, и следующая сборка падает с «Отказано в доступе». Сначала
+выйдите через трей.
 
-The scripts refuse early if the project sits in a path containing non-ASCII
-characters. `windres` cannot open files through such a path, and the error it
-prints instead blames the icon, which sends you looking in the wrong place.
+**Windows кэширует иконки файлов.** После смены иконки проводник ещё долго
+показывает старую. Помогает `ie4uinit.exe -show`, а если нет, то удалить
+`%LOCALAPPDATA%\IconCache.db` и перезапустить проводник.
 
-Output lands in `C:\perch-target\release\`: `perch.exe` to run directly, plus an
-NSIS installer and an MSI under `bundle\`.
-
-**Closing the window does not quit Perch.** It parks in the tray, and a running
-instance holds `perch.exe` open — so the next build fails with *Access denied*.
-Quit from the tray first.
-
-**Windows caches file icons.** After the icon changes, Explorer keeps showing the
-old one. Run `ie4uinit.exe -show`, or delete `%LOCALAPPDATA%\IconCache.db` and
-restart Explorer.
+Для GNU-сборки нужен MinGW в `PATH`, ради `windres`. Скрипты его туда добавляют и
+заранее отказываются работать, если путь к проекту содержит не-ASCII символы:
+`windres` не может открыть файл через такой путь, а ошибку выдаёт про иконку, что
+уводит поиск не туда.
 
 </details>
 
 <details>
-<summary><strong>Cutting a release</strong></summary>
+<summary><strong>Выпуск релиза</strong></summary>
 
-Tag a commit and push the tag. `.github/workflows/release.yml` builds installers
-for Windows, both macOS architectures and Linux, then attaches them to a
-**draft** release — publishing stays a manual step, so nothing appears on the
-releases page until you press the button.
+Поставьте тег на коммит и отправьте его. Workflow `.github/workflows/release.yml`
+соберёт установщики под Windows, обе архитектуры macOS и Linux и приложит их к
+**черновику** релиза. Публикация остаётся ручным действием, так что на странице
+релизов ничего не появится, пока не нажмёте кнопку.
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.5
+git push origin v0.1.5
 ```
 
-The version in the filenames comes from `version` in `src-tauri/tauri.conf.json`,
-so bump that in the same commit you tag.
+Версия в именах файлов берётся из `version` в `src-tauri/tauri.conf.json`, так что
+поднимайте её тем же коммитом, на который ставите тег.
 
 </details>
 
-## Your data
+## Где что лежит
 
-Rules, folders and every setting are edited in the app and written to disk as you
-go. Nothing here is meant to be opened in a text editor — it is listed so you know
-what to back up, and what to delete if you want a clean slate.
+Правила, папки и все настройки редактируются в приложении и пишутся на диск сами.
+Ничего из этого не предполагает открытия в текстовом редакторе. Список нужен,
+чтобы знать, что забрать при переезде и что удалить для чистого старта.
 
-Everything sits in `Perch/` under the OS local data directory, and Settings ›
-On disk shows the exact paths and opens them in the file manager.
+Всё лежит в папке `Perch/` внутри локальной папки данных пользователя, а точные
+пути показывают настройки в разделе «На диске», там же кнопка открыть в проводнике.
 
-| File | What |
+| Файл | Что внутри |
 | --- | --- |
-| `config.json` | Settings and watched folders |
-| `rules.json` | Your rules |
-| `journal.db` | SQLite history — what undo reads |
-| `account.json` | Only if you set a password |
+| `config.json` | Настройки и список отслеживаемых папок |
+| `rules.json` | Ваши правила |
+| `journal.db` | История в SQLite, из неё работает отмена |
+| `account.json` | Появляется, только если поставить пароль |
 
-Rules can be exported and imported as JSON from Settings › Rules, for sharing or
-keeping in version control. The format is documented in
+Правила можно выгружать и загружать в формате JSON через настройки, чтобы
+поделиться или держать в системе контроля версий. Формат описан в
 [docs/rules.md](docs/rules.md).
 
-### The password
+## Пароль
 
-Optional, and local. There is no server and no sync: signing in unlocks the app
-on this machine. The password is stored as an Argon2id hash, and the Rust side
-refuses every data command while the session is locked, so the lock screen is not
-the only thing holding the door.
+Необязательный и локальный. Сервера нет и синхронизации нет: вход разблокирует
+приложение на этом компьютере. Пароль хранится хешем Argon2id, и пока сессия
+заблокирована, Rust-сторона отказывает всем командам с данными, так что экран
+входа не единственный замок.
 
-It **gates access; it does not encrypt.** The rules and history files stay
-readable to anyone who can open the folder. Forgotten it? There is nothing to
-reset it from — delete `account.json` and the lock is gone, rules untouched.
+Это **блокировка доступа, а не шифрование**. Файлы правил и истории на диске
+остаются читаемыми для того, кто откроет папку. Забыли пароль? Сбросить его
+неоткуда, он никуда не отправлялся. Удалите `account.json`, и блокировка снимется,
+правила при этом останутся на месте.
 
-## Not implemented yet
+## Если что-то пошло не так
 
-Listed so nobody builds a rule on top of one:
-
-- `Unzip` and `RunCommand` actions are accepted and recorded, but do nothing.
-- The `MIME type`, `Is a duplicate` and `Max depth` conditions match every file,
-  so the rule editor does not offer them.
-- `src-tauri/src/cli` is a placeholder; there is no command-line interface yet.
-
-## Where things are
-
-| Path | What's in it |
+| Симптом | В чём дело |
 | --- | --- |
-| `src/lib/ipc.ts` | Every backend command, typed. The only file that talks to `@tauri-apps/api`. |
-| `src/store/app.ts` | UI state. Mutations go out over IPC and store what comes back. |
-| `src/lib/i18n.ts` | Both dictionaries. Russian is the source of truth; English is typed against it. |
-| `src/lib/presets.ts` | The ready-made rules. |
-| `src/screens/` | Rules, the rule editor, activity, folders, settings, lock screen. |
-| `src/design/` | Tokens, the glass material, appearance settings, hover effects. |
-| `src-tauri/src/core/` | Scanner, matcher, planner, executor, journal, templates, accounts. |
-| `src-tauri/src/commands/` | The command surface the UI calls. |
-| `scripts/gen-icons.mjs` | Builds the whole icon set from `src/assets/mark.svg` (`npm run icons`). |
+| Закрыл окно, а приложение работает | Так и задумано: Perch ушёл в трей, чтобы продолжать разбирать папки. Выйти совсем можно через трей или в настройках |
+| Правило ничего не находит | Откройте его в редакторе, там снизу написано, сколько файлов подходит прямо сейчас. Проверьте, что папка добавлена в отслеживаемые и включена |
+| Файл переместился не туда | История хранит каждую операцию, откат по кнопке. Шаблон назначения виден в описании правила |
+| Из корзины ничего не вернуть кнопкой | Действие «В корзину» отменяется не приложением, а системной корзиной. Так задумано |
+| Не запускается с ошибкой про WebView2Loader.dll | Сборка под GNU, а не MSVC. Возьмите установщик из релиза, см. раздел про сборку выше |
 
-Architecture notes: [docs/architecture.md](docs/architecture.md). Design
-language: [docs/design-system.md](docs/design-system.md). `CHANGELOG.md` records
-what changed and, where it matters, why.
+## Чего пока нет
 
-## FAQ
+Перечислено, чтобы никто не строил на этом правило:
 
-**Is it safe?** Files are never deleted outright — the `Trash` action goes
-through the system recycle bin. Every operation is journalled, and moves, renames
-and copies can be undone from the Activity screen.
+- Действия `Unzip` и `RunCommand` принимаются и записываются в историю, но ничего
+  не делают.
+- Условия `MIME-тип`, `Это дубликат` и `Глубина не больше` подходят любому файлу,
+  поэтому редактор правил их не предлагает.
+- `src-tauri/src/cli` это заготовка, интерфейса командной строки пока нет.
 
-**Does it phone home?** No. Zero network requests, no telemetry, no accounts.
+## Устройство проекта
 
-**Why another file organizer?** Because the good ones are paid and
-Mac-only, and the free ones look it.
+| Путь | Что там |
+| --- | --- |
+| `src/lib/ipc.ts` | Все команды бэкенда с типами. Единственный файл, который обращается к `@tauri-apps/api` |
+| `src/store/app.ts` | Состояние интерфейса. Изменения уходят через IPC, сохраняется то, что вернулось |
+| `src/lib/i18n.ts` | Оба словаря. Русский первичен, английский типизирован по нему |
+| `src/lib/presets.ts` | Готовые правила |
+| `src/screens/` | Правила, редактор, история, папки, настройки, экран входа |
+| `src/design/` | Токены, материал стекла, настройки внешнего вида, эффекты наведения |
+| `src-tauri/src/core/` | Сканер, сопоставление, планировщик, исполнитель, журнал, шаблоны, аккаунты |
+| `src-tauri/src/commands/` | Команды, которые вызывает интерфейс |
+| `scripts/gen-icons.mjs` | Собирает весь набор иконок из `src/assets/mark.svg` (`npm run icons`) |
 
-## Built with
+Архитектура: [docs/architecture.md](docs/architecture.md). Оформление:
+[docs/design-system.md](docs/design-system.md). В `CHANGELOG.md` записано, что
+менялось и, где это важно, почему.
+
+## Вопросы
+
+**Это безопасно?** Файлы никогда не удаляются насовсем: действие «В корзину» идёт
+через системную корзину. Каждая операция попадает в историю, а перемещения,
+переименования и копирования отменяются с экрана истории.
+
+**Отправляет ли что-нибудь наружу?** Нет. Ноль сетевых запросов, никакой
+телеметрии, никаких аккаунтов.
+
+**Зачем ещё один разборщик файлов?** Потому что хорошие платные и только под Mac,
+а бесплатные так и выглядят.
+
+## Собрано на
 
 [Tauri 2](https://tauri.app) · [Rust](https://rust-lang.org) ·
 [React](https://react.dev) · [TypeScript](https://typescriptlang.org) ·
 [Framer Motion](https://motion.dev)
 
-Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+Помощь приветствуется, см. [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
-<p align="center"><sub>by <a href="https://github.com/Fuilex">Fuilex</a> · MIT License</sub></p>
+<p align="center"><sub><a href="https://github.com/Fuilex">Fuilex</a> · Лицензия MIT</sub></p>
