@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [0.1.5] - 2026-07-27
+
+### Note for anyone distributing a Windows build
+
+Build for MSVC, not GNU. On the GNU toolchain `webview2-com` cannot link the
+WebView2 loader statically, so the executable imports `WebView2Loader.dll` at
+runtime. Cargo puts that DLL beside the binary — so the build works on the
+machine that produced it — but the installer does not carry it, and on any other
+computer the app fails to start with "system could not find WebView2Loader.dll".
+
+`npx tauri build --target x86_64-pc-windows-msvc` links it statically. The release
+workflow already uses MSVC, so installers from a tagged release are fine; only
+hand-built GNU ones are affected.
 
 ### Added
 - The interface now talks to the backend. Every screen reads and writes real

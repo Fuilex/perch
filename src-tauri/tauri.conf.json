@@ -1,6 +1,6 @@
 {
   "productName": "Perch",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "identifier": "com.fuilex.perch",
   "build": {
     "frontendDist": "../dist",

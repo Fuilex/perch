@@ -76,14 +76,34 @@ no backend behind it, so the window says so and anything touching real files is
 refused.
 
 <details>
-<summary><strong>Building on Windows</strong> — two traps worth knowing about</summary>
-
-The Rust GNU toolchain is used, so MinGW has to be on `PATH` for `windres`:
+<summary><strong>Building on Windows</strong> — three traps worth knowing about</summary>
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/dev.ps1
 powershell -ExecutionPolicy Bypass -File scripts/build.ps1
 ```
+
+**Build for MSVC if you intend to give the result to anyone.** On the GNU
+toolchain, `webview2-com` cannot link the WebView2 loader statically, so the
+executable ends up importing `WebView2Loader.dll` at runtime. Cargo drops that
+DLL next to the binary, which is why the build runs fine on the machine that made
+it — but the installer does not carry it, and on someone else's computer the app
+dies before it starts:
+
+> Не удаётся продолжить выполнение кода, поскольку система не обнаружила
+> WebView2Loader.dll
+
+MSVC links it statically and the problem disappears:
+
+```bash
+npx tauri build --target x86_64-pc-windows-msvc
+```
+
+The release workflow already builds MSVC, so installers from a tagged release are
+unaffected. Only hand-built GNU ones are.
+
+MinGW on `PATH` is what the GNU toolchain needs for `windres`; the scripts put it
+there.
 
 The scripts refuse early if the project sits in a path containing non-ASCII
 characters. `windres` cannot open files through such a path, and the error it
