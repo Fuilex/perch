@@ -15,7 +15,9 @@
   <a href="https://github.com/Fuilex/perch/actions"><img src="https://img.shields.io/github/actions/workflow/status/Fuilex/perch/ci.yml?branch=main&style=flat-square&label=CI" alt="CI" /></a>
 </p>
 
----
+<p align="center">
+  <img src="docs/media/screenshot.png" width="820" alt="The Rules screen: a rule summarised in one line, with a switch to turn it off" />
+</p>
 
 Downloads folder full of installers, screenshots and half-read PDFs? Tell Perch
 what belongs where, once. It watches the folders you choose and files things as
