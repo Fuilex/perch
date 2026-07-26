@@ -142,40 +142,14 @@ so bump that in the same commit you tag.
 
 </details>
 
-## Rule format
-
-Rules are stored as JSON, and Settings › Rules exports them in this shape. `id`
-is required but gets replaced on import, so any UUID will do.
-
-```json
-{
-  "version": 1,
-  "rules": [
-    {
-      "id": "00000000-0000-4000-8000-000000000001",
-      "name": "Archive old screenshots",
-      "enabled": true,
-      "conditions": [
-        { "type": "Glob", "value": "Screenshot*" },
-        { "type": "OlderThan", "value": 604800 }
-      ],
-      "action": {
-        "type": "Move",
-        "dest_template": "~/Pictures/Screenshots/{year}-{month}"
-      },
-      "stop_on_match": true,
-      "order": 0
-    }
-  ]
-}
-```
-
-Sizes are bytes, ages are seconds. The rule editor is easier — it shows how many
-files a rule matches as you type. Full reference: [docs/rules.md](docs/rules.md).
-
 ## Your data
 
-Everything sits in `Perch/` under the OS local data directory:
+Rules, folders and every setting are edited in the app and written to disk as you
+go. Nothing here is meant to be opened in a text editor — it is listed so you know
+what to back up, and what to delete if you want a clean slate.
+
+Everything sits in `Perch/` under the OS local data directory, and Settings ›
+On disk shows the exact paths and opens them in the file manager.
 
 | File | What |
 | --- | --- |
@@ -184,7 +158,9 @@ Everything sits in `Perch/` under the OS local data directory:
 | `journal.db` | SQLite history — what undo reads |
 | `account.json` | Only if you set a password |
 
-Settings › On disk shows the exact paths and opens them in the file manager.
+Rules can be exported and imported as JSON from Settings › Rules, for sharing or
+keeping in version control. The format is documented in
+[docs/rules.md](docs/rules.md).
 
 ### The password
 
