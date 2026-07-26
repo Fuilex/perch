@@ -72,6 +72,18 @@ Two things that will waste your afternoon otherwise:
 - **Closing the window doesn't quit Perch** — it parks in the tray, and a running instance holds `perch.exe` open, so the next build fails with "Отказано в доступе" / "Access denied". Quit from the tray first.
 - **Windows caches file icons.** After changing the icon, Explorer keeps showing the old one. `ie4uinit.exe -show`, or delete `%LOCALAPPDATA%\IconCache.db` and restart Explorer.
 
+### Cutting a release
+
+Tag a commit and push the tag. `.github/workflows/release.yml` builds installers
+for Windows, both macOS architectures and Linux, then attaches them to a **draft**
+release — publishing stays a manual step, so nothing appears on the releases page
+until you press the button.
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
 ## Example rule
 
 Rules are stored as JSON, and Settings › Rules exports them in this shape. `id` is required but gets replaced on import, so any UUID will do.

@@ -56,3 +56,9 @@ coverage/
 # Local editor/tooling settings, not project source.
 .claude/
 .vscode/settings.json
+
+# Machine-local cargo config: target dir and toolchain paths differ per machine,
+# and a committed one breaks CI (an absolute Windows target-dir becomes a
+# literal directory name on Linux). scripts/*.ps1 set CARGO_TARGET_DIR and put
+# MinGW on PATH instead.
+src-tauri/.cargo/

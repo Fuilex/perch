@@ -1,11 +1,26 @@
 name: Release
+
+# Tag a commit to cut a release:
+#
+#   git tag v0.1.0 && git push origin v0.1.0
+#
+# Each platform builds its own installers, they are attached to a *draft*
+# release, and publishing it stays a manual step — nothing reaches the releases
+# page until you press the button.
 on:
   push:
     tags: ['v*']
+  # Handy for testing the workflow without tagging.
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     strategy:
+      # One platform failing shouldn't throw away the others' artifacts.
+      fail-fast: false
       matrix:
         include:
           - os: macos-latest
@@ -19,21 +34,52 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-      - name: Install Linux deps
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev
+          # The tray indicator package was renamed; accept either.
+          sudo apt-get install -y libwebkit2gtk-4.1-dev librsvg2-dev patchelf
+          sudo apt-get install -y libayatana-appindicator3-dev \
+            || sudo apt-get install -y libappindicator3-dev
+
       - run: npm ci
+      - run: npm run typecheck
+      - run: npm run test
       - run: npx tauri build --target ${{ matrix.target }}
+
+      # Kept as workflow artifacts too, so a failed release step doesn't mean
+      # rebuilding everything.
       - uses: actions/upload-artifact@v4
         with:
           name: perch-${{ matrix.target }}
           path: src-tauri/target/${{ matrix.target }}/release/bundle/**/*
+          if-no-files-found: error
+
+      - name: Attach to the draft release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          files: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*-setup.exe
+            src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
+            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+            src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
+            src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
