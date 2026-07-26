@@ -2,7 +2,7 @@
 // Resolves templates like {name}, {ext}, {year}, {month}, etc.
 
 use chrono::Local;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 /// Available template variables:
 /// {name}          - filename without extension
@@ -56,6 +56,63 @@ pub fn render_template(
         .replace("{counter}", &format!("{:03}", counter))
         .replace("{hash8}", hash8)
         .replace("{source_folder}", source_folder)
+}
+
+/// Turn a rendered template into an absolute destination path.
+///
+/// Handles the three shapes a user can reasonably type:
+///   `~/Documents/{year}`        — home-relative
+///   `Archive/{year}`            — relative to the file's own folder
+///   `D:/Sorted/{name}.{ext}`    — absolute
+///
+/// When the template names a folder rather than a file (no `{name}`, trailing
+/// separator, or no extension) the original filename is appended, so
+/// `~/Documents/PDFs` does the obvious thing.
+pub fn resolve_destination(template: &str, source: &Path) -> Option<PathBuf> {
+    let rendered = render_template(template, source, 0, None);
+    let trimmed = rendered.trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+
+    let looks_like_dir = trimmed.ends_with('/')
+        || trimmed.ends_with('\\')
+        || (!template.contains("{name}")
+            && Path::new(trimmed)
+                .file_name()
+                .and_then(|n| n.to_str())
+                .map(|n| !n.contains('.'))
+                .unwrap_or(true));
+
+    let expanded = expand_home(trimmed);
+
+    let mut path = if expanded.is_absolute() {
+        expanded
+    } else {
+        source.parent().unwrap_or(Path::new(".")).join(expanded)
+    };
+
+    if looks_like_dir {
+        if let Some(name) = source.file_name() {
+            path.push(name);
+        }
+    }
+
+    Some(path)
+}
+
+/// Expand a leading `~` to the user's home directory.
+pub fn expand_home(input: &str) -> PathBuf {
+    let normalized = input.trim().replace('\\', "/");
+    if normalized == "~" {
+        return dirs::home_dir().unwrap_or_else(|| PathBuf::from("~"));
+    }
+    if let Some(rest) = normalized.strip_prefix("~/") {
+        if let Some(home) = dirs::home_dir() {
+            return home.join(rest);
+        }
+    }
+    PathBuf::from(input.trim())
 }
 
 /// Validate that a template string contains only known variables.

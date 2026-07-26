@@ -11,6 +11,20 @@ $CargoBin = "$env:USERPROFILE\.cargo\bin"
 $env:PATH = "$MingwBin;$CargoBin;$env:PATH"
 $env:CARGO_TARGET_DIR = "C:\perch-target"
 
+# windres — which tauri-winres shells out to for the Windows resource — cannot
+# open files under a path containing non-ASCII characters. It fails with
+# "can't open icon file: Invalid argument", which is easy to misread as a
+# problem with the icon itself.
+if ($ProjectDir -notmatch '^[\x20-\x7E]+$') {
+    Write-Host "ERROR: the project path contains non-ASCII characters:" -ForegroundColor Red
+    Write-Host "  $ProjectDir" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "GNU windres cannot read files through such a path, so the Windows" -ForegroundColor Yellow
+    Write-Host "resource (app icon, version info) cannot be compiled. Move the project" -ForegroundColor Yellow
+    Write-Host "somewhere ASCII-only — C:\perch, for example — and run this again." -ForegroundColor Yellow
+    exit 1
+}
+
 Write-Host "=== Perch Build ===" -ForegroundColor Cyan
 
 # 1. Frontend

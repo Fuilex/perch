@@ -1,0 +1,363 @@
+/* ============================================================================
+ * Hover and emphasis effects.
+ *
+ * Everything here is CSS rather than framer-motion, because these run on hover
+ * of many elements at once and a compositor-only animation costs nothing.
+ * All of it collapses under [data-reduced-motion].
+ * ========================================================================= */
+
+/* Registered so the angle can be interpolated — a plain custom property would
+   jump from 0 to 360 instead of sweeping. */
+@property --glow-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* --------------------------------------------------------------------------
+ * Glow ring — a light travelling around the border on hover.
+ *
+ * Two conic highlights chase each other around the edge. The ring is drawn as
+ * a padding-box cut out of a border-box gradient, the same trick .glass::before
+ * uses, so it stays exactly 1.5px wide at any radius.
+ * ----------------------------------------------------------------------- */
+
+.glow-ring {
+  position: relative;
+  isolation: isolate;
+}
+
+.glow-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  /*
+   * Two arcs chasing each other round the rim, driven by the keyframes below.
+   *
+   * Deliberately no colour-mix(): an unsupported function invalidates the whole
+   * gradient, and losing the effect entirely is worse than a harder falloff.
+   */
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0deg,
+    var(--glow-color, var(--accent)) 32deg,
+    transparent 96deg,
+    transparent 180deg,
+    var(--glow-color, var(--accent)) 212deg,
+    transparent 276deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 220ms var(--ease-out);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.glow-ring:hover::after,
+.glow-ring:focus-visible::after {
+  opacity: 1;
+  animation: glow-sweep 2.6s linear infinite;
+}
+
+@keyframes glow-sweep {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+/* A soft bloom outside the ring, so the light reads as light rather than as a
+   coloured outline. Kept off primary buttons, which are already bright. */
+.glow-ring--bloom {
+  transition: box-shadow 220ms var(--ease-out);
+}
+
+.glow-ring--bloom:hover {
+  box-shadow: 0 0 20px -6px var(--glow-color, var(--accent));
+}
+
+/* --------------------------------------------------------------------------
+ * Shine — a single highlight crossing a filled surface on hover.
+ * ----------------------------------------------------------------------- */
+
+.shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 45%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.42) 50%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shine:hover::before {
+  animation: shine-sweep 780ms var(--ease-out);
+}
+
+@keyframes shine-sweep {
+  0% {
+    left: -60%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    left: 120%;
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Aurora — the light sitting against the right edge of the window.
+ *
+ * Two slow, out-of-step loops: one drifts and stretches the shape, the other
+ * breathes its opacity. Because the periods don't divide into each other the
+ * pair never visibly repeats. It is white by default and picks up the accent
+ * only when one is chosen, so the standard look stays monochrome.
+ * ----------------------------------------------------------------------- */
+
+.aurora {
+  position: absolute;
+  top: -20%;
+  right: -24%;
+  width: 82%;
+  height: 140%;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(40px);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.085) 44%,
+    transparent 72%
+  );
+  animation:
+    aurora-drift 31s var(--ease-out) infinite,
+    aurora-breathe 12s ease-in-out infinite;
+}
+
+/* The core: tighter, brighter, and moving on a different path so the two never
+   line up. Together they read as one light shifting rather than two blobs. */
+.aurora--core {
+  top: 2%;
+  right: -10%;
+  width: 46%;
+  height: 66%;
+  filter: blur(28px);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.26),
+    rgba(255, 255, 255, 0.07) 50%,
+    transparent 76%
+  );
+  animation:
+    aurora-sweep 23s ease-in-out infinite,
+    aurora-breathe 7.5s ease-in-out infinite;
+}
+
+/* A long, narrow band riding up and down the very edge. It is what catches the
+   eye — the wide layers alone were too even to notice. */
+.aurora--edge {
+  top: -10%;
+  right: -6%;
+  width: 20%;
+  height: 60%;
+  filter: blur(34px);
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.08) 48%,
+    transparent 78%
+  );
+  animation:
+    aurora-ride 17s ease-in-out infinite,
+    aurora-breathe 5.5s ease-in-out infinite;
+}
+
+/* With an accent chosen, the light takes its colour — very lightly. */
+[data-accent='blue'] .aurora,
+[data-accent='violet'] .aurora,
+[data-accent='green'] .aurora,
+[data-accent='amber'] .aurora {
+  background: radial-gradient(
+    closest-side,
+    var(--accent-soft),
+    rgba(255, 255, 255, 0.045) 48%,
+    transparent 74%
+  );
+}
+
+/* The light theme needs far less of it, and darker, or it just washes out. */
+[data-theme='light'] .aurora {
+  background: radial-gradient(
+    closest-side,
+    rgba(10, 10, 11, 0.055),
+    rgba(10, 10, 11, 0.02) 46%,
+    transparent 72%
+  );
+}
+
+[data-theme='light'] .aurora--core {
+  background: radial-gradient(
+    closest-side,
+    rgba(10, 10, 11, 0.05),
+    rgba(10, 10, 11, 0.015) 52%,
+    transparent 76%
+  );
+}
+
+/* Wide, slow wander. Rotation stretches the ellipse as it turns, so the shape
+   changes rather than just sliding about. */
+@keyframes aurora-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+  27% {
+    transform: translate3d(-9%, 7%, 0) scale(1.18) rotate(9deg);
+  }
+  53% {
+    transform: translate3d(4%, -8%, 0) scale(0.9) rotate(-6deg);
+  }
+  78% {
+    transform: translate3d(-5%, 3%, 0) scale(1.1) rotate(4deg);
+  }
+}
+
+/* Diagonal sweep across the corner, with a pause at each end. */
+@keyframes aurora-sweep {
+  0%,
+  100% {
+    transform: translate3d(6%, 34%, 0) scale(0.86);
+  }
+  20% {
+    transform: translate3d(-2%, 8%, 0) scale(1.14);
+  }
+  50% {
+    transform: translate3d(-14%, -22%, 0) scale(1.02);
+  }
+  74% {
+    transform: translate3d(-4%, 12%, 0) scale(1.2);
+  }
+}
+
+/* Straight up and down the edge — the movement that actually reads. */
+@keyframes aurora-ride {
+  0%,
+  100% {
+    transform: translate3d(0, -6%, 0) scaleY(0.9);
+  }
+  35% {
+    transform: translate3d(-3%, 62%, 0) scaleY(1.25);
+  }
+  70% {
+    transform: translate3d(2%, 118%, 0) scaleY(0.95);
+  }
+}
+
+@keyframes aurora-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+[data-reduced-motion] .aurora {
+  animation: none;
+  opacity: 0.6;
+}
+
+/* --------------------------------------------------------------------------
+ * Nav rows — the icon leads, the label follows a little behind.
+ * ----------------------------------------------------------------------- */
+
+.nav-row .nav-icon {
+  transition:
+    transform 320ms var(--ease-out),
+    opacity 200ms var(--ease-out);
+}
+
+.nav-row:hover .nav-icon {
+  transform: translateX(2px) scale(1.08);
+}
+
+.nav-row .nav-label {
+  transition: transform 380ms var(--ease-out);
+}
+
+.nav-row:hover .nav-label {
+  transform: translateX(1.5px);
+}
+
+/* --------------------------------------------------------------------------
+ * Template variable chips and other small pressable tokens.
+ * ----------------------------------------------------------------------- */
+
+.token {
+  transition:
+    background-color 160ms var(--ease-out),
+    border-color 160ms var(--ease-out),
+    transform 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+
+.token:hover {
+  background-color: var(--glass-fill-hover);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.token:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* --------------------------------------------------------------------------
+ * Reduced motion — keep the highlight, drop the movement.
+ * ----------------------------------------------------------------------- */
+
+[data-reduced-motion] .glow-ring:hover::after,
+[data-reduced-motion] .glow-ring:focus-visible::after {
+  animation: none;
+  background: var(--glow-color, var(--accent));
+  opacity: 0.55;
+}
+
+[data-reduced-motion] .shine:hover::before {
+  animation: none;
+}
+
+[data-reduced-motion] .nav-row:hover .nav-icon,
+[data-reduced-motion] .nav-row:hover .nav-label,
+[data-reduced-motion] .token:hover {
+  transform: none;
+}

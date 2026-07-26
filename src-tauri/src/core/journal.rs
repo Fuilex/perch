@@ -99,12 +99,47 @@ impl Journal {
     }
 
     pub fn get_all(&self, limit: usize) -> SqlResult<Vec<JournalEntry>> {
-        let conn = self.conn.lock().unwrap();
-        let mut stmt = conn.prepare(
+        self.query(
             "SELECT id, batch_id, rule_id, source, destination, action_type, timestamp, undone
              FROM journal ORDER BY timestamp DESC LIMIT ?1",
+            params![limit as i64],
+        )
+    }
+
+    /// One entry by id.
+    pub fn get(&self, id: &Uuid) -> SqlResult<Option<JournalEntry>> {
+        let mut rows = self.query(
+            "SELECT id, batch_id, rule_id, source, destination, action_type, timestamp, undone
+             FROM journal WHERE id = ?1",
+            params![id.to_string()],
         )?;
-        let entries = stmt.query_map(params![limit as i64], |row| {
+        Ok(rows.pop())
+    }
+
+    /// Every entry in a batch, newest first — the order undo needs.
+    pub fn get_batch(&self, batch_id: &Uuid) -> SqlResult<Vec<JournalEntry>> {
+        self.query(
+            "SELECT id, batch_id, rule_id, source, destination, action_type, timestamp, undone
+             FROM journal WHERE batch_id = ?1 ORDER BY timestamp DESC",
+            params![batch_id.to_string()],
+        )
+    }
+
+    /// Drop the whole history (the UI offers this under Settings → Data).
+    pub fn clear(&self) -> SqlResult<usize> {
+        let conn = self.conn.lock().unwrap();
+        conn.execute("DELETE FROM journal", [])
+    }
+
+    pub fn count(&self) -> SqlResult<i64> {
+        let conn = self.conn.lock().unwrap();
+        conn.query_row("SELECT COUNT(*) FROM journal", [], |row| row.get(0))
+    }
+
+    fn query<P: rusqlite::Params>(&self, sql: &str, params: P) -> SqlResult<Vec<JournalEntry>> {
+        let conn = self.conn.lock().unwrap();
+        let mut stmt = conn.prepare(sql)?;
+        let entries = stmt.query_map(params, |row| {
             let id_str: String = row.get(0)?;
             let batch_str: String = row.get(1)?;
             let rule_str: String = row.get(2)?;

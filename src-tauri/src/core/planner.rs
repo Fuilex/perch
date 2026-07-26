@@ -28,21 +28,34 @@ pub fn plan(files: &[PathBuf], rules: &[Rule]) -> Vec<PlannedOperation> {
 
 fn plan_single(file: &Path, rule: &Rule) -> Option<PlannedOperation> {
     let destination = match &rule.action {
-        Action::Move { dest_template } | Action::Copy { dest_template } => {
-            let rendered = template::render_template(dest_template, file, 0, None);
-            Some(PathBuf::from(rendered))
-        }
+        Action::Move { dest_template }
+        | Action::Copy { dest_template }
+        | Action::Unzip { dest_template } => template::resolve_destination(dest_template, file)?,
         Action::Rename { template: tmpl } => {
             let rendered = template::render_template(tmpl, file, 0, None);
-            file.parent().map(|p| p.join(rendered))
+            if rendered.trim().is_empty() {
+                return None;
+            }
+            file.parent()?.join(rendered.trim())
         }
-        Action::Trash => None,
-        Action::Unzip { dest_template } => {
-            let rendered = template::render_template(dest_template, file, 0, None);
-            Some(PathBuf::from(rendered))
+        Action::Trash | Action::RunCommand { .. } => {
+            return Some(PlannedOperation {
+                id: Uuid::new_v4(),
+                source: file.to_path_buf(),
+                destination: None,
+                action_type: ActionType::from(&rule.action),
+                rule_id: rule.id,
+                rule_name: rule.name.clone(),
+                selected: true,
+            })
         }
-        Action::RunCommand { .. } => None,
     };
+
+    // A no-op move (already in the right place) isn't worth showing.
+    if destination == file {
+        return None;
+    }
+    let destination = Some(destination);
 
     Some(PlannedOperation {
         id: Uuid::new_v4(),

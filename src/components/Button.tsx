@@ -1,4 +1,4 @@
-import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, type ReactNode } from 'react';
 import { motion, type HTMLMotionProps } from 'framer-motion';
 import { springs } from '@/design/tokens';
 
@@ -20,37 +20,68 @@ const sizeStyles: Record<ButtonSize, React.CSSProperties> = {
   lg: { padding: '10px 20px', fontSize: '0.9375rem', borderRadius: 'var(--radius-md)', gap: '8px', height: '40px' },
 };
 
-const variantStyles: Record<ButtonVariant, { base: React.CSSProperties; hover: React.CSSProperties }> = {
+/**
+ * `glowColor` is what travels around the border on hover. Filled variants take a
+ * white highlight — an accent glow on an accent fill would be invisible — while
+ * the see-through ones take the accent itself. `bloom` adds the outer haze, and
+ * is left off filled variants so they don't smear.
+ */
+const variantStyles: Record<
+  ButtonVariant,
+  { base: React.CSSProperties; glowColor: string; bloom: boolean; shine: boolean }
+> = {
   primary: {
-    base: { backgroundColor: 'var(--text-primary)', color: 'var(--color-bg-from)', fontWeight: 500 },
-    hover: { backgroundColor: 'var(--text-secondary)' },
+    base: { backgroundColor: 'var(--accent)', color: 'var(--accent-ink)', fontWeight: 500 },
+    glowColor: 'rgba(255, 255, 255, 0.9)',
+    bloom: false,
+    shine: true,
   },
   secondary: {
     base: { backgroundColor: 'var(--glass-fill)', color: 'var(--text-primary)', fontWeight: 400 },
-    hover: { backgroundColor: 'var(--glass-fill-hover)' },
+    glowColor: 'var(--accent)',
+    bloom: true,
+    shine: false,
   },
   ghost: {
     base: { backgroundColor: 'transparent', color: 'var(--text-secondary)', fontWeight: 400 },
-    hover: { backgroundColor: 'var(--glass-fill)' },
+    glowColor: 'var(--accent)',
+    bloom: false,
+    shine: false,
   },
   destructive: {
-    base: { backgroundColor: 'var(--text-primary)', color: 'var(--color-bg-from)', fontWeight: 600 },
-    hover: { backgroundColor: 'var(--text-secondary)' },
+    base: { backgroundColor: '#FF453A', color: '#FFFFFF', fontWeight: 500 },
+    glowColor: 'rgba(255, 255, 255, 0.9)',
+    bloom: false,
+    shine: true,
   },
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'secondary', size = 'md', icon, children, loading, disabled, style, ...props }, ref) => {
+  (
+    { variant = 'secondary', size = 'md', icon, children, loading, disabled, style, className = '', ...props },
+    ref,
+  ) => {
     const s = sizeStyles[size];
     const v = variantStyles[variant];
+    const inert = disabled || loading;
+
+    const classes = [
+      inert ? '' : 'glow-ring',
+      !inert && v.bloom ? 'glow-ring--bloom' : '',
+      !inert && v.shine ? 'shine' : '',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     return (
       <motion.button
         ref={ref}
-        whileHover={disabled ? undefined : { scale: 1.01 }}
-        whileTap={disabled ? undefined : { scale: 0.98 }}
+        className={classes}
+        whileHover={inert ? undefined : { scale: 1.015, y: -1 }}
+        whileTap={inert ? undefined : { scale: 0.975, y: 0 }}
         transition={springs.snappy}
-        disabled={disabled || loading}
+        disabled={inert}
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -62,6 +93,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           letterSpacing: '0',
           lineHeight: 1,
           transition: 'background-color 150ms ease, opacity 150ms ease',
+          ['--glow-color' as string]: v.glowColor,
           ...s,
           ...v.base,
           ...style,
@@ -69,11 +101,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading ? (
-          <span style={{ width: 16, height: 16, border: '2px solid currentColor', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
+          <span
+            style={{
+              width: 16,
+              height: 16,
+              border: '2px solid currentColor',
+              borderTopColor: 'transparent',
+              borderRadius: '50%',
+              animation: 'spin 0.6s linear infinite',
+            }}
+          />
         ) : icon ? (
           <span style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>{icon}</span>
         ) : null}
-        {children && <span>{children}</span>}
+        {children && <span style={{ position: 'relative', zIndex: 1 }}>{children}</span>}
       </motion.button>
     );
   },

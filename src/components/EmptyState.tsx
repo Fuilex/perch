@@ -16,6 +16,8 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
       transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
       style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        // Grows to fill a screen's column so the state sits optically centred.
+        flex: 1, minHeight: 280,
         padding: 'var(--space-12)', textAlign: 'center', gap: 'var(--space-3)',
       }}
     >

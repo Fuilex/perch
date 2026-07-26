@@ -44,3 +44,15 @@ coverage/
 # Misc
 *.tsbuildinfo
 .eslintcache
+
+# A copy of the project that ended up nested inside it. Not part of the source.
+/perch/
+
+# Icon set is generated from src/assets/mark.svg by `npm run icons`, but the
+# results are committed: the Windows build needs icon.ico present, and CI has no
+# reason to re-render it.
+!src-tauri/icons/
+
+# Local editor/tooling settings, not project source.
+.claude/
+.vscode/settings.json

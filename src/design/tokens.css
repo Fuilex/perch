@@ -21,6 +21,9 @@
   --glass-border-subtle: rgba(255, 255, 255, 0.06);
   --glass-highlight: rgba(255, 255, 255, 0.10);
   --glass-separator: rgba(255, 255, 255, 0.06);
+  /* Light bouncing back off the bottom inner wall — reads as thickness. */
+  --glass-underlight: rgba(255, 255, 255, 0.045);
+  --glass-brightness: 1.06;
 
   /* Specular border gradient */
   --glass-specular-from: rgba(255, 255, 255, 0.20);
@@ -69,6 +72,8 @@
   --glass-border-subtle: rgba(0, 0, 0, 0.05);
   --glass-highlight: rgba(255, 255, 255, 0.60);
   --glass-separator: rgba(0, 0, 0, 0.06);
+  --glass-underlight: rgba(255, 255, 255, 0.55);
+  --glass-brightness: 1.02;
 
   --glass-specular-from: rgba(255, 255, 255, 0.80);
   --glass-specular-mid: rgba(255, 255, 255, 0.30);
@@ -109,6 +114,8 @@
     --glass-border-subtle: rgba(0, 0, 0, 0.05);
     --glass-highlight: rgba(255, 255, 255, 0.60);
     --glass-separator: rgba(0, 0, 0, 0.06);
+    --glass-underlight: rgba(255, 255, 255, 0.55);
+    --glass-brightness: 1.02;
 
     --glass-specular-from: rgba(255, 255, 255, 0.80);
     --glass-specular-mid: rgba(255, 255, 255, 0.30);
@@ -207,5 +214,4 @@
   /* Layout */
   --sidebar-width: 220px;
   --titlebar-height: 48px;
-  --window-radius: 24px;
 }

@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { cardVariants } from '@/design/animations';
 import { Glass } from './Glass';

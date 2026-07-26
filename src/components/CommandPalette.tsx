@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { commandPaletteOverlay, commandPaletteContent } from '@/design/animations';
+import { useT } from '@/lib/i18n';
 import { Glass } from './Glass';
 
 interface CommandItem {
@@ -18,6 +19,7 @@ interface CommandPaletteProps {
 }
 
 export function CommandPalette({ open, onClose, items }: CommandPaletteProps) {
+  const t = useT();
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -78,7 +80,7 @@ export function CommandPalette({ open, onClose, items }: CommandPaletteProps) {
                   value={query}
                   onChange={(e) => { setQuery(e.target.value); setSelected(0); }}
                   onKeyDown={handleKeyDown}
-                  placeholder="Type a command..."
+                  placeholder={t('palette.placeholder')}
                   style={{
                     width: '100%', background: 'none', border: 'none', outline: 'none',
                     color: 'var(--text-primary)', fontSize: '0.9375rem', fontFamily: 'var(--font-text)',
@@ -108,7 +110,7 @@ export function CommandPalette({ open, onClose, items }: CommandPaletteProps) {
                 ))}
                 {filtered.length === 0 && (
                   <div style={{ padding: 16, textAlign: 'center', color: 'var(--text-tertiary)', fontSize: '0.8125rem' }}>
-                    No results
+                    {t('palette.noResults')}
                   </div>
                 )}
               </div>

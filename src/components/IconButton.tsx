@@ -17,8 +17,9 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       aria-label={label}
       onClick={onClick}
       disabled={disabled}
-      whileHover={disabled ? undefined : { scale: 1.05, backgroundColor: 'var(--glass-fill-hover)' }}
-      whileTap={disabled ? undefined : { scale: 0.92 }}
+      className={disabled ? undefined : 'glow-ring'}
+      whileHover={disabled ? undefined : { scale: 1.08, backgroundColor: 'var(--glass-fill-hover)' }}
+      whileTap={disabled ? undefined : { scale: 0.9 }}
       transition={springs.snappy}
       style={{
         width: size,

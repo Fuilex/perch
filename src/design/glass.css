@@ -19,10 +19,36 @@
 .glass {
   position: relative;
   background-color: var(--glass-fill);
-  backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate));
-  -webkit-backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate));
+
+  /*
+   * The sheen: a soft highlight sitting on top of the fill, centred wherever the
+   * pointer is. Glass.tsx writes --sheen-x / --sheen-y on mouse move (straight
+   * onto the node, not through React state), and --sheen-strength fades the whole
+   * thing in and out so it doesn't pop.
+   *
+   * It lives in background-image rather than a pseudo-element because ::before is
+   * the specular edge and ::after is the grain — both already taken.
+   */
+  background-image: radial-gradient(
+    380px circle at var(--sheen-x, 50%) var(--sheen-y, 0%),
+    rgba(255, 255, 255, calc(0.075 * var(--sheen-strength, 0))),
+    transparent 62%
+  );
+  transition: background-image 220ms var(--ease-out);
+
+  backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness, 1));
+  -webkit-backdrop-filter: blur(var(--glass-blur-medium)) saturate(var(--glass-saturate))
+    brightness(var(--glass-brightness, 1));
+
+  /*
+   * Three inset lines read as thickness: light catching the top edge, a dimmer
+   * line under it for the inner wall, and light bouncing back off the bottom.
+   */
   box-shadow:
     inset 0 1px 0 var(--glass-highlight),
+    inset 0 2px 6px -4px rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 var(--glass-underlight),
     var(--shadow-md);
   border: none;
   isolation: isolate;
@@ -139,12 +165,25 @@
 .glass--interactive {
   cursor: pointer;
   transition:
-    background-color var(--duration-micro) var(--ease-out),
-    box-shadow var(--duration-micro) var(--ease-out);
+    background-color var(--duration-standard) var(--ease-out),
+    box-shadow var(--duration-standard) var(--ease-out);
 }
 
+/* Glass can't use the .glow-ring class from motion.css — ::before is the
+   specular edge and ::after is the grain, so there is no pseudo-element left.
+   The same idea is expressed with layered shadows instead: the inset picks out
+   the edge in the accent, the outer one blooms underneath it. */
 .glass--interactive:hover {
   background-color: var(--glass-fill-hover);
+  box-shadow:
+    inset 0 0 0 1px var(--accent-soft),
+    inset 0 1px 0 var(--glass-highlight),
+    var(--shadow-md),
+    0 0 22px -10px var(--accent);
+}
+
+.glass--interactive:active {
+  transition-duration: var(--duration-micro);
 }
 
 .glass--interactive:active {

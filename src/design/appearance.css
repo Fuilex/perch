@@ -1,0 +1,183 @@
+/* ============================================================================
+ * Appearance settings — the CSS side of Settings › Appearance.
+ *
+ * src/lib/appearance.ts stamps data-theme / data-accent / data-glass /
+ * data-reduced-motion onto <html> from the persisted config, and everything
+ * below reacts to those attributes. Loaded after tokens.css so it can override.
+ * ========================================================================= */
+
+/* --------------------------------------------------------------------------
+ * Accent — mono keeps the interface achromatic, the rest tint the few places
+ * that carry emphasis: primary buttons, switches, focus rings.
+ * ----------------------------------------------------------------------- */
+
+:root,
+[data-accent='mono'] {
+  --accent: var(--text-primary);
+  --accent-hover: var(--text-secondary);
+  --accent-ink: var(--color-bg-from);
+  --accent-soft: var(--glass-fill-hover);
+  --accent-track: rgba(245, 245, 247, 0.32);
+}
+
+[data-theme='light'][data-accent='mono'] {
+  --accent-track: rgba(10, 10, 11, 0.28);
+}
+
+[data-accent='blue'] {
+  --accent: #0A84FF;
+  --accent-hover: #3D9DFF;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(10, 132, 255, 0.18);
+  --accent-track: rgba(10, 132, 255, 0.85);
+}
+
+[data-accent='violet'] {
+  --accent: #8E7CFF;
+  --accent-hover: #A594FF;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(142, 124, 255, 0.18);
+  --accent-track: rgba(142, 124, 255, 0.85);
+}
+
+[data-accent='green'] {
+  --accent: #30D158;
+  --accent-hover: #4CDC70;
+  --accent-ink: #08130B;
+  --accent-soft: rgba(48, 209, 88, 0.18);
+  --accent-track: rgba(48, 209, 88, 0.85);
+}
+
+[data-accent='amber'] {
+  --accent: #FF9F0A;
+  --accent-hover: #FFB340;
+  --accent-ink: #1A1103;
+  --accent-soft: rgba(255, 159, 10, 0.18);
+  --accent-track: rgba(255, 159, 10, 0.85);
+}
+
+/* Coloured accents get a matching focus ring; mono keeps the neutral one. */
+[data-accent='blue'],
+[data-accent='violet'],
+[data-accent='green'],
+[data-accent='amber'] {
+  --focus-ring: 0 0 0 2px var(--accent-soft), 0 0 0 1px var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+ * Glass intensity — how much backdrop blur the material carries. "off" swaps
+ * the translucent fills for solid ones so panels stay legible without blur.
+ * ----------------------------------------------------------------------- */
+
+[data-glass='off'] {
+  --glass-blur-light: 0px;
+  --glass-blur-medium: 0px;
+  --glass-blur-heavy: 0px;
+  --glass-saturate: 100%;
+  --glass-brightness: 1;
+  --glass-noise-opacity: 0;
+  /* No blur means no material to catch light, so the sheen goes too. */
+  --sheen-strength: 0;
+}
+
+[data-theme='dark'][data-glass='off'] {
+  --glass-fill: #17171A;
+  --glass-fill-hover: #202024;
+  --glass-fill-active: #131316;
+}
+
+[data-theme='light'][data-glass='off'] {
+  --glass-fill: #FFFFFF;
+  --glass-fill-hover: #F6F6F8;
+  --glass-fill-active: #EDEDF0;
+}
+
+[data-glass='light'] {
+  --glass-blur-light: 12px;
+  --glass-blur-medium: 18px;
+  --glass-blur-heavy: 26px;
+  --glass-saturate: 120%;
+}
+
+[data-glass='medium'] {
+  --glass-blur-light: 24px;
+  --glass-blur-medium: 36px;
+  --glass-blur-heavy: 48px;
+  --glass-saturate: 140%;
+}
+
+[data-glass='heavy'] {
+  --glass-blur-light: 32px;
+  --glass-blur-medium: 52px;
+  --glass-blur-heavy: 72px;
+  --glass-saturate: 170%;
+}
+
+/* --------------------------------------------------------------------------
+ * Reduced motion — framer-motion is handled by MotionConfig in App.tsx; this
+ * covers the CSS keyframe animations it doesn't know about.
+ * ----------------------------------------------------------------------- */
+
+[data-reduced-motion] .animate-blob-drift-1,
+[data-reduced-motion] .animate-blob-drift-2,
+[data-reduced-motion] .animate-blob-drift-3,
+[data-reduced-motion] .animate-blob-drift-4,
+[data-reduced-motion] .animate-scan-breathe {
+  animation: none;
+}
+
+[data-reduced-motion] * {
+  transition-duration: 1ms !important;
+}
+
+/* --------------------------------------------------------------------------
+ * Stacked rows — settings groups, activity batches, review lists. Each row
+ * after the first draws its own separator, so the container needs no markup.
+ * ----------------------------------------------------------------------- */
+
+.setting-row + .setting-row {
+  border-top: 1px solid var(--glass-separator);
+}
+
+/* --------------------------------------------------------------------------
+ * Window shell — the window is undecorated and transparent, so the rounded
+ * corner and the hairline that reads as its edge are ours to draw.
+ * ----------------------------------------------------------------------- */
+
+/*
+ * The window is transparent and undecorated, so this is what gives it a shape.
+ * It fills the window exactly — no margin, nothing of the desktop showing along
+ * the edges.
+ *
+ * Everything is inset for that reason. An outer drop shadow would need a
+ * transparent margin to land in, and that margin showed the desktop through it:
+ * against anything dark it read as a black band down the side. The system's own
+ * shadow is off for the same reason, since Windows draws it around the window's
+ * rectangle and it bled through the rounded corners.
+ *
+ * The system's rounding is off too. It rounds at about 8px, which fought this
+ * radius and left a transparent wedge between the two arcs.
+ */
+.window-shell {
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--color-bg-from) 0%, var(--color-bg-to) 100%);
+  box-shadow:
+    /* The edge, so the slab reads as an object rather than a cut-out. */
+    inset 0 0 0 1px var(--glass-border),
+    /* Light along the top inside edge, shading down the bottom: depth without
+       anything drawn outside the window. */
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -20px 40px -30px rgba(0, 0, 0, 0.5);
+}
+
+/* Maximised: flush to the screen, so the corners come off. */
+:root[data-maximized='true'] .window-shell {
+  border-radius: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
