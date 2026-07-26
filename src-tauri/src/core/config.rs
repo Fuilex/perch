@@ -136,7 +136,12 @@ mod tests {
 
     #[test]
     fn quiet_hours_same_day_window() {
-        let q = QuietHours { start_hour: 9, start_minute: 0, end_hour: 17, end_minute: 0 };
+        let q = QuietHours {
+            start_hour: 9,
+            start_minute: 0,
+            end_hour: 17,
+            end_minute: 0,
+        };
         assert!(q.contains(10 * 60));
         assert!(!q.contains(8 * 60));
         assert!(!q.contains(17 * 60));
@@ -144,7 +149,12 @@ mod tests {
 
     #[test]
     fn quiet_hours_wrapping_window() {
-        let q = QuietHours { start_hour: 22, start_minute: 0, end_hour: 8, end_minute: 0 };
+        let q = QuietHours {
+            start_hour: 22,
+            start_minute: 0,
+            end_hour: 8,
+            end_minute: 0,
+        };
         assert!(q.contains(23 * 60));
         assert!(q.contains(2 * 60));
         assert!(!q.contains(12 * 60));

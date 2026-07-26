@@ -51,7 +51,9 @@ impl Rule {
             name: name.into(),
             enabled: true,
             conditions: Vec::new(),
-            action: Action::Move { dest_template: String::new() },
+            action: Action::Move {
+                dest_template: String::new(),
+            },
             stop_on_match: true,
             order: 0,
         }

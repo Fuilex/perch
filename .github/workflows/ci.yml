@@ -20,10 +20,29 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          # The tray indicator package was renamed; accept either.
+          sudo apt-get install -y libwebkit2gtk-4.1-dev librsvg2-dev
+          sudo apt-get install -y libayatana-appindicator3-dev \
+            || sudo apt-get install -y libappindicator3-dev
+
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test
+
+      # Anything that compiles the crate needs the frontend on disk first:
+      # tauri's generate_context! embeds it from `frontendDist`, and dist/ is
+      # generated, so it is not in the repository.
+      - run: npm run build
+
       - run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
       - run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
       - run: cargo test --manifest-path src-tauri/Cargo.toml

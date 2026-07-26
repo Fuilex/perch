@@ -191,7 +191,10 @@ impl AppState {
             None => match fs::remove_file(&self.paths.account) {
                 Ok(()) => Ok(()),
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
-                Err(e) => Err(format!("could not remove {}: {e}", self.paths.account.display())),
+                Err(e) => Err(format!(
+                    "could not remove {}: {e}",
+                    self.paths.account.display()
+                )),
             },
         }
     }

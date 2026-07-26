@@ -68,26 +68,64 @@ fn execute_single(op: &PlannedOperation, batch_id: Uuid) -> Result<JournalEntry,
                 fs::copy(&op.source, &final_dest).map_err(|e| e.to_string())?;
                 fs::remove_file(&op.source).map_err(|e| e.to_string())?;
             }
-            Ok(JournalEntry::new(op.id, batch_id, op.rule_id, op.source.clone(), Some(final_dest), ActionType::Move))
+            Ok(JournalEntry::new(
+                op.id,
+                batch_id,
+                op.rule_id,
+                op.source.clone(),
+                Some(final_dest),
+                ActionType::Move,
+            ))
         }
         ActionType::Copy => {
             let dest = op.destination.as_ref().ok_or("Copy requires destination")?;
             let final_dest = resolve_collision(dest)?;
             ensure_parent_dir(&final_dest)?;
             fs::copy(&op.source, &final_dest).map_err(|e| e.to_string())?;
-            Ok(JournalEntry::new(op.id, batch_id, op.rule_id, op.source.clone(), Some(final_dest), ActionType::Copy))
+            Ok(JournalEntry::new(
+                op.id,
+                batch_id,
+                op.rule_id,
+                op.source.clone(),
+                Some(final_dest),
+                ActionType::Copy,
+            ))
         }
         ActionType::Rename => {
-            let dest = op.destination.as_ref().ok_or("Rename requires destination")?;
+            let dest = op
+                .destination
+                .as_ref()
+                .ok_or("Rename requires destination")?;
             let final_dest = resolve_collision(dest)?;
             fs::rename(&op.source, &final_dest).map_err(|e| e.to_string())?;
-            Ok(JournalEntry::new(op.id, batch_id, op.rule_id, op.source.clone(), Some(final_dest), ActionType::Rename))
+            Ok(JournalEntry::new(
+                op.id,
+                batch_id,
+                op.rule_id,
+                op.source.clone(),
+                Some(final_dest),
+                ActionType::Rename,
+            ))
         }
         ActionType::Trash => {
             trash::delete(&op.source).map_err(|e| e.to_string())?;
-            Ok(JournalEntry::new(op.id, batch_id, op.rule_id, op.source.clone(), None, ActionType::Trash))
+            Ok(JournalEntry::new(
+                op.id,
+                batch_id,
+                op.rule_id,
+                op.source.clone(),
+                None,
+                ActionType::Trash,
+            ))
         }
-        _ => Ok(JournalEntry::new(op.id, batch_id, op.rule_id, op.source.clone(), op.destination.clone(), op.action_type.clone())),
+        _ => Ok(JournalEntry::new(
+            op.id,
+            batch_id,
+            op.rule_id,
+            op.source.clone(),
+            op.destination.clone(),
+            op.action_type.clone(),
+        )),
     }
 }
 
@@ -122,15 +160,16 @@ pub fn undo(entry: &JournalEntry) -> Result<(), String> {
             Ok(())
         }
         ActionType::Copy => {
-            let dest = entry.destination.as_ref().ok_or("Nothing recorded to remove")?;
+            let dest = entry
+                .destination
+                .as_ref()
+                .ok_or("Nothing recorded to remove")?;
             if dest.exists() {
                 fs::remove_file(dest).map_err(|e| e.to_string())?;
             }
             Ok(())
         }
-        ActionType::Trash => {
-            Err("Trashed files are restored from the Recycle Bin".to_string())
-        }
+        ActionType::Trash => Err("Trashed files are restored from the Recycle Bin".to_string()),
         ActionType::Unzip | ActionType::RunCommand => {
             Err("This kind of operation can't be undone automatically".to_string())
         }

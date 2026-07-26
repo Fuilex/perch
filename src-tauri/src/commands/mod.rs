@@ -114,7 +114,10 @@ pub fn duplicate_rule(state: Db<'_>, id: String) -> Res<Vec<Rule>> {
 #[tauri::command]
 pub fn reorder_rules(state: Db<'_>, ids: Vec<String>) -> Res<Vec<Rule>> {
     gate(&state)?;
-    let order: Vec<Uuid> = ids.iter().filter_map(|id| Uuid::parse_str(id).ok()).collect();
+    let order: Vec<Uuid> = ids
+        .iter()
+        .filter_map(|id| Uuid::parse_str(id).ok())
+        .collect();
     state.update_rules(|rules| {
         for rule in rules.iter_mut() {
             if let Some(index) = order.iter().position(|id| id == &rule.id) {
@@ -144,10 +147,7 @@ pub fn add_watched_folder(app: AppHandle, state: Db<'_>, path: String) -> Res<Ve
         return Err(format!("{} is not a folder", path.display()));
     }
     let config = state.update_config(|cfg| {
-        let already_there = cfg
-            .watched_folders
-            .iter()
-            .any(|f| f.path == path);
+        let already_there = cfg.watched_folders.iter().any(|f| f.path == path);
         if !already_there {
             cfg.watched_folders.push(WatchedFolder::new(path.clone()));
         }
@@ -281,7 +281,10 @@ pub fn scan_folder(state: Db<'_>, path: String) -> Res<Vec<String>> {
     gate(&state)?;
     let path = template::expand_home(&path);
     let files = scanner::scan_folder(&path, None, state.config().skip_hidden);
-    Ok(files.iter().map(|p| p.to_string_lossy().to_string()).collect())
+    Ok(files
+        .iter()
+        .map(|p| p.to_string_lossy().to_string())
+        .collect())
 }
 
 // ---------------------------------------------------------------------------
@@ -455,7 +458,8 @@ pub fn export_rules(app: AppHandle, state: Db<'_>) -> Res<Option<String>> {
         rules: state.rules(),
     };
     let text = serde_json::to_string_pretty(&bundle).map_err(|e| e.to_string())?;
-    std::fs::write(&target, text).map_err(|e| format!("could not write {}: {e}", target.display()))?;
+    std::fs::write(&target, text)
+        .map_err(|e| format!("could not write {}: {e}", target.display()))?;
     Ok(Some(target.to_string_lossy().to_string()))
 }
 
@@ -524,7 +528,9 @@ pub fn reveal_path(state: Db<'_>, path: String) -> Res<()> {
 
     #[cfg(target_os = "linux")]
     let result = std::process::Command::new("xdg-open")
-        .arg(if path.is_dir() { path.clone() } else {
+        .arg(if path.is_dir() {
+            path.clone()
+        } else {
             path.parent().unwrap_or(&path).to_path_buf()
         })
         .spawn();

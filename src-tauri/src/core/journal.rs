@@ -66,7 +66,9 @@ impl Journal {
             CREATE INDEX IF NOT EXISTS idx_batch ON journal(batch_id);
             CREATE INDEX IF NOT EXISTS idx_timestamp ON journal(timestamp DESC);",
         )?;
-        Ok(Self { conn: Mutex::new(conn) })
+        Ok(Self {
+            conn: Mutex::new(conn),
+        })
     }
 
     pub fn open_in_memory() -> SqlResult<Self> {
@@ -94,7 +96,10 @@ impl Journal {
 
     pub fn mark_undone(&self, id: &Uuid) -> SqlResult<()> {
         let conn = self.conn.lock().unwrap();
-        conn.execute("UPDATE journal SET undone = 1 WHERE id = ?1", params![id.to_string()])?;
+        conn.execute(
+            "UPDATE journal SET undone = 1 WHERE id = ?1",
+            params![id.to_string()],
+        )?;
         Ok(())
     }
 
@@ -173,7 +178,9 @@ mod tests {
     fn test_journal_record_and_retrieve() {
         let journal = Journal::open_in_memory().unwrap();
         let entry = JournalEntry::new(
-            Uuid::new_v4(), Uuid::new_v4(), Uuid::new_v4(),
+            Uuid::new_v4(),
+            Uuid::new_v4(),
+            Uuid::new_v4(),
             PathBuf::from("/source/file.txt"),
             Some(PathBuf::from("/dest/file.txt")),
             ActionType::Move,

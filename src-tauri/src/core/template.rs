@@ -4,25 +4,24 @@
 use chrono::Local;
 use std::path::{Path, PathBuf};
 
-/// Available template variables:
-/// {name}          - filename without extension
-/// {ext}           - file extension (without dot)
-/// {year}          - 4-digit year
-/// {month}         - 2-digit month
-/// {day}           - 2-digit day
-/// {hour}          - 2-digit hour
-/// {minute}        - 2-digit minute
-/// {counter}       - auto-incrementing counter (handled by executor)
-/// {hash8}         - first 8 chars of SHA-256 hash
-/// {source_folder} - name of the source folder
+// Available template variables:
+//   {name}          - filename without extension
+//   {ext}           - file extension (without dot)
+//   {year}          - 4-digit year
+//   {month}         - 2-digit month
+//   {day}           - 2-digit day
+//   {hour}          - 2-digit hour
+//   {minute}        - 2-digit minute
+//   {counter}       - auto-incrementing counter (handled by executor)
+//   {hash8}         - first 8 chars of SHA-256 hash
+//   {source_folder} - name of the source folder
+//
+// A plain comment, not a doc comment: it documents the module rather than the
+// function that happens to follow it, and clippy rightly objects to a doc
+// comment left dangling by the blank line.
 
 /// Render a path template with file context.
-pub fn render_template(
-    template: &str,
-    source: &Path,
-    counter: u32,
-    hash: Option<&str>,
-) -> String {
+pub fn render_template(template: &str, source: &Path, counter: u32, hash: Option<&str>) -> String {
     let now = Local::now();
 
     let name = source
@@ -30,10 +29,7 @@ pub fn render_template(
         .and_then(|s| s.to_str())
         .unwrap_or("unnamed");
 
-    let ext = source
-        .extension()
-        .and_then(|s| s.to_str())
-        .unwrap_or("");
+    let ext = source.extension().and_then(|s| s.to_str()).unwrap_or("");
 
     let source_folder = source
         .parent()
@@ -41,9 +37,7 @@ pub fn render_template(
         .and_then(|s| s.to_str())
         .unwrap_or("");
 
-    let hash8 = hash
-        .map(|h| &h[..8.min(h.len())])
-        .unwrap_or("00000000");
+    let hash8 = hash.map(|h| &h[..8.min(h.len())]).unwrap_or("00000000");
 
     template
         .replace("{name}", name)
@@ -118,8 +112,16 @@ pub fn expand_home(input: &str) -> PathBuf {
 /// Validate that a template string contains only known variables.
 pub fn validate_template(template: &str) -> Result<(), Vec<String>> {
     let known = [
-        "{name}", "{ext}", "{year}", "{month}", "{day}", "{hour}",
-        "{minute}", "{counter}", "{hash8}", "{source_folder}",
+        "{name}",
+        "{ext}",
+        "{year}",
+        "{month}",
+        "{day}",
+        "{hour}",
+        "{minute}",
+        "{counter}",
+        "{hash8}",
+        "{source_folder}",
     ];
 
     let mut unknown = Vec::new();
@@ -175,12 +177,7 @@ mod tests {
     #[test]
     fn test_hash_template() {
         let source = PathBuf::from("/home/user/image.png");
-        let result = render_template(
-            "{name}_{hash8}.{ext}",
-            &source,
-            0,
-            Some("abcdef0123456789"),
-        );
+        let result = render_template("{name}_{hash8}.{ext}", &source, 0, Some("abcdef0123456789"));
         assert_eq!(result, "image_abcdef01.png");
     }
 

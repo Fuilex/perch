@@ -11,7 +11,9 @@
 
 use std::path::Path;
 
-use argon2::password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString};
+use argon2::password_hash::{
+    rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString,
+};
 use argon2::Argon2;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -63,7 +65,9 @@ impl Account {
             log::error!("stored password hash is not readable");
             return false;
         };
-        Argon2::default().verify_password(password.as_bytes(), &parsed).is_ok()
+        Argon2::default()
+            .verify_password(password.as_bytes(), &parsed)
+            .is_ok()
     }
 
     pub fn set_password(&mut self, password: &str) -> Result<(), String> {
@@ -85,7 +89,12 @@ impl Account {
 impl AccountState {
     /// No account yet — the app is open and offers to create one.
     pub fn none() -> Self {
-        Self { exists: false, username: None, created_at: None, unlocked: true }
+        Self {
+            exists: false,
+            username: None,
+            created_at: None,
+            unlocked: true,
+        }
     }
 }
 
@@ -103,7 +112,9 @@ pub fn validate_username(username: &str) -> Result<(), String> {
         return Err("Pick a name for the account".to_string());
     }
     if username.chars().count() > MAX_USERNAME_LEN {
-        return Err(format!("That name is longer than {MAX_USERNAME_LEN} characters"));
+        return Err(format!(
+            "That name is longer than {MAX_USERNAME_LEN} characters"
+        ));
     }
     if username.chars().any(|c| c.is_control()) {
         return Err("That name contains characters that aren't allowed".to_string());
